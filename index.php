@@ -1,13 +1,21 @@
 <?php
+    session_start();
     $password = '';
 
     // Faqat Generate bosilganda password yaratish
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $password = generatePassword(10);
-        // Session'ga saqlamaslik - faqat bir marta ko'rsatish
+        $password = generatePassword(12);
+        $_SESSION['temp_password'] = $password;
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
     }
 
-    function generatePassword($length = 10) {
+    if (isset($_SESSION['temp_password'])) {
+        $password = $_SESSION['temp_password'];
+        unset($_SESSION['temp_password']);  // 1 marta ko'rsatgandan keyin o'chirish
+    }
+
+    function generatePassword($length = 12) {
         $lowercase = 'abcdefghijklmnopqrstuvwxyz';
         $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $numbers = '0123456789';
@@ -49,12 +57,12 @@
         <div class="container d-flex justify-content-center mt-5 py-5 shadow">
             <form action="" method="post">
                 <label for="password" class="form-label fw-bold fs-4 text-start d-block">Password:</label>
-                <input type="text" name="password" id="password" class="form-control form-control-lg" value="<?php echo htmlspecialchars($password); ?>" placeholder="Click Generate to create passoword" readonly>
+                <input type="text" name="password" id="password" class="form-control form-control-lg" value="<?php echo htmlspecialchars($password); ?>" placeholder="Click Generate to create password" readonly>
                 
                 <div class="mt-4 d-flex justify-content-between gap-5">
                     <button type="submit" class="btn btn-primary rounded-3 flex-fill">Generate</button>
                     <button type="button" id="copyBtn" class="btn btn-outline-secondary rounded-3 flex-fill" 
-                    <?=  empty($password) ? 'disbled' : '' ?>>Copy</button>
+                    <?=  empty($password) ? 'disabled' : '' ?>>Copy</button>
                 </div>
             </form>
         </div>
