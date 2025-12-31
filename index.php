@@ -20,10 +20,6 @@
 
         return str_shuffle($password);
     }
-    
-
-
-
 
     if (!isset($_SESSION['REQUEST_METHOD']) || $_SESSION['REQUEST_METHOD'] !== 'POST') {
         $_SESSION['REQUEST_METHOD'] = bin2hex(random_bytes(4));
@@ -45,12 +41,16 @@
             <h1 class="fw-bold">Simple Password Generator</h1>
         </div>
 
-        <div class="container text-center mt-5">
-            <input type="text" name="password" id="password" class="form-control w-50 mx-auto" required>
-            <div class="mt-4 d-flex justify-content-between w-50 mx-auto gap-5">
-                <button type="button" class="btn btn-primary rounded-3">Generate</button>
-                <button type="button" class="btn btn-primary rounded-3">Copy</button>
-            </div>
+        <div class="container d-flex justify-content-center mt-5 card-shadow">
+            <form action="" method="post">
+                <label for="password" class="form-label fw-bold fs-4 text-start d-block">Password:</label>
+                <input type="text" name="password" id="password" class="form-control form-control-lg" value="<?php echo htmlspecialchars($password ?? ''); ?>" placeholder="Create Passoword" readonly>
+                
+                <div class="mt-4 d-flex justify-content-between gap-5">
+                    <button type="submit" class="btn btn-primary rounded-3 flex-fill">Generate</button>
+                    <button type="submit" id="copyBtn" class="btn btn-primary rounded-3 flex-fill">Copy</button>
+                </div>
+            </form>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
