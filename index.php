@@ -1,17 +1,10 @@
 <?php
-    session_start();
-    
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $length = 10;
-        $password = generatePassword($length);
-        $_SESSION['password'] = generatePassword($length);
-        header('Locatin: ' . $_SERVER['PHP_SELF']);
-        exit;
-    }
+    $password = '';
 
-    if (isset($_SESSION['generated_password'])) {
-        $password = $_SESSION['generated_password'];
-        unset($_SESSION['generated_password']);
+    // Faqat Generate bosilganda password yaratish
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $password = generatePassword(10);
+        // Session'ga saqlamaslik - faqat bir marta ko'rsatish
     }
 
     function generatePassword($length = 10) {
@@ -20,24 +13,21 @@
         $numbers = '0123456789';
         $specialChars = '!@#$%^&*()-_=+[]{}|;:,.<>?';
 
-        $chars = $lowercase . $uppercase . $numbers . $specialChars;
-        $charsLength = strlen($chars);
+        $allChars = $lowercase . $uppercase . $numbers . $specialChars;
         $password = '';
 
+        // Har bir turdan kamida 1 ta (strong password)
         $password .= $lowercase[random_int(0, strlen($lowercase) - 1)];
         $password .= $uppercase[random_int(0, strlen($uppercase) - 1)];
         $password .= $numbers[random_int(0, strlen($numbers) - 1)];
         $password .= $specialChars[random_int(0, strlen($specialChars) - 1)];
 
-        for ($i = 0; $i < $length - 4; $i++) {
-            $password .= $chars[random_int(0, strlen($chars) - 1)];
+        // Qolgan belgilar
+        for ($i = 4; $i < $length; $i++) {
+            $password .= $allChars[random_int(0, strlen($allChars) - 1)];
         }
 
         return str_shuffle($password);
-    }
-
-    if (isset($_GET['password'])) {
-        echo '<p><strong>' . htmlspecialchars($_GET['password']) . '</strong></p>';
     }
 ?>
 
@@ -59,23 +49,38 @@
         <div class="container d-flex justify-content-center mt-5 py-5 shadow">
             <form action="" method="post">
                 <label for="password" class="form-label fw-bold fs-4 text-start d-block">Password:</label>
-                <input type="text" name="password" id="password" class="form-control form-control-lg" value="<?php echo htmlspecialchars($password); ?>" placeholder="Create Passoword" readonly>
+                <input type="text" name="password" id="password" class="form-control form-control-lg" value="<?php echo htmlspecialchars($password); ?>" placeholder="Click Generate to create passoword" readonly>
                 
                 <div class="mt-4 d-flex justify-content-between gap-5">
                     <button type="submit" class="btn btn-primary rounded-3 flex-fill">Generate</button>
-                    <button type="button" id="copyBtn" class="btn btn-primary rounded-3 flex-fill">Copy</button>
+                    <button type="button" id="copyBtn" class="btn btn-outline-secondary rounded-3 flex-fill" 
+                    <?=  empty($password) ? 'disbled' : '' ?>>Copy</button>
                 </div>
             </form>
         </div>
 
         <script>
             document.getElementById('copyBtn').addEventListener('click', function() {
-                const passwordField = document.getElementById('password');
-                passwordField.select();
-                passwordField.setSelectionRange(0, 99999);
-                navigator.clipboard.writeText(passwordField.value)
-                .then(() => alert('Password copied to clipboard!'))
-                .catch(() => alert('Failed to copy'));
+            const passwordField = document.getElementById('password');
+            
+                if (passwordField.value) {
+                    navigator.clipboard.writeText(passwordField.value)
+                        .then(() => {
+                            // Success feedback
+                            const btn = this;
+                            const originalText = btn.textContent;
+                            btn.textContent = 'Copied!';
+                            btn.classList.remove('btn-outline-secondary');
+                            btn.classList.add('btn-success');
+                            
+                            setTimeout(() => {
+                                btn.textContent = originalText;
+                                btn.classList.remove('btn-success');
+                                btn.classList.add('btn-outline-secondary');
+                            }, 2000);
+                        })
+                        .catch(() => alert('Failed to copy password'));
+                }
             });
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
