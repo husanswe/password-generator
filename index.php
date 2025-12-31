@@ -1,6 +1,20 @@
 <?php
+    session_start();
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $length = 10;
+        $password = generatePassword($length);
+        $_SESSION['password'] = generatePassword($length);
+        header('Locatin: ' . $_SERVER['PHP_SELF']);
+        exit;
+    }
 
-    function generatePassword($length = 8) {
+    if (isset($_SESSION['generated_password'])) {
+        $password = $_SESSION['generated_password'];
+        unset($_SESSION['generated_password']);
+    }
+
+    function generatePassword($length = 10) {
         $lowercase = 'abcdefghijklmnopqrstuvwxyz';
         $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $numbers = '0123456789';
@@ -20,11 +34,6 @@
         }
 
         return str_shuffle($password);
-    }
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $length = 12;
-        $password = generatePassword($length);
     }
 
     if (isset($_GET['password'])) {
@@ -47,7 +56,7 @@
             <h1 class="fw-bold">Simple Password Generator</h1>
         </div>
 
-        <div class="container d-flex justify-content-center mt-5 card-shadow">
+        <div class="container d-flex justify-content-center mt-5 py-5 shadow">
             <form action="" method="post">
                 <label for="password" class="form-label fw-bold fs-4 text-start d-block">Password:</label>
                 <input type="text" name="password" id="password" class="form-control form-control-lg" value="<?php echo htmlspecialchars($password); ?>" placeholder="Create Passoword" readonly>
